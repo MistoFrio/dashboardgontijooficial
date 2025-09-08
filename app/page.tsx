@@ -14,6 +14,7 @@ import { Eye, EyeOff, AlertCircle } from "lucide-react"
 import { signIn } from "@/lib/auth"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { AnimatedBackground } from "@/components/animated-background"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -83,10 +84,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen relative flex items-center justify-center p-4">
+      {/* Animated Background */}
+      <AnimatedBackground />
+      
+      {/* Login Content */}
+      <div className="w-full max-w-md relative z-10">
         {/* Login Card */}
-        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+        <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-md">
           <CardHeader className="text-center space-y-6 pt-8">
             <div className="flex justify-center">
               <div className="w-20 h-20 relative p-2 bg-white rounded-2xl shadow-sm">
