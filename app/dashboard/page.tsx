@@ -183,11 +183,7 @@ export default function UserDashboard() {
           <div className="space-y-6">
             {/* Page Header */}
             <PageHeader
-<<<<<<< HEAD
               title={`Olá, ${user.name.split(" ")[0]}!`}
-=======
-              title={`Olá, ${user.name.split(" ")[0]}! 👋`}
->>>>>>> f4e8eb30c9e4417e05e072b9a8054e4648e7927a
               description="Acesse os dashboards disponíveis para você"
             />
 
@@ -197,17 +193,10 @@ export default function UserDashboard() {
                 {dashboards.map((dashboard) => (
                   <Card
                     key={dashboard.id}
-<<<<<<< HEAD
                     className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 shadow-sm bg-white/80 backdrop-blur-sm hover:bg-white flex flex-col h-full"
                     onClick={() => openDashboard(dashboard)}
                   >
                     <CardHeader className="space-y-3 flex-1">
-=======
-                    className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-0 shadow-sm bg-white/80 backdrop-blur-sm hover:bg-white"
-                    onClick={() => openDashboard(dashboard)}
-                  >
-                    <CardHeader className="space-y-3">
->>>>>>> f4e8eb30c9e4417e05e072b9a8054e4648e7927a
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-lg font-semibold text-gray-900 group-hover:text-red-600 transition-colors">
                           {dashboard.name}
@@ -233,22 +222,13 @@ export default function UserDashboard() {
                         {dashboard.description || "Dashboard disponível para visualização"}
                       </CardDescription>
                     </CardHeader>
-<<<<<<< HEAD
                     <CardFooter className="pt-0">
-=======
-                    <CardContent className="pt-0">
->>>>>>> f4e8eb30c9e4417e05e072b9a8054e4648e7927a
                       <Button
                         className={cn(
                           "w-full transition-all duration-200 group-hover:shadow-md",
                           dashboard.type === "external"
-<<<<<<< HEAD
                             ? "bg-red-600 hover:bg-red-700 text-white"
                             : "bg-red-600 hover:bg-red-700 text-white",
-=======
-                            ? "bg-blue-600 hover:bg-blue-700"
-                            : "bg-red-600 hover:bg-red-700",
->>>>>>> f4e8eb30c9e4417e05e072b9a8054e4648e7927a
                         )}
                       >
                         {dashboard.type === "external" ? (
@@ -263,11 +243,7 @@ export default function UserDashboard() {
                           </>
                         )}
                       </Button>
-<<<<<<< HEAD
                     </CardFooter>
-=======
-                    </CardContent>
->>>>>>> f4e8eb30c9e4417e05e072b9a8054e4648e7927a
                   </Card>
                 ))}
               </div>
