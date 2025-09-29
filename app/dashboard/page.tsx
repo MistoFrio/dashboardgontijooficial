@@ -254,7 +254,7 @@ export default function UserDashboard() {
                 description="Você ainda não tem acesso a nenhum dashboard. Entre em contato com o administrador para solicitar acesso."
                 action={{
                   label: "Contatar Administrador",
-                  onClick: () => window.open("mailto:admin@gontijo.com", "_blank"),
+                  onClick: () => window.open("https://wa.me/553199390798", "_blank"),
                 }}
               />
             )}
