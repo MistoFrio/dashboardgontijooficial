@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { Eye, EyeOff, AlertCircle } from "lucide-react"
-import { signIn } from "@/lib/auth"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Eye, EyeOff, AlertCircle, Mail, CheckCircle } from "lucide-react"
+import { signIn, resetPassword } from "@/lib/auth"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { AnimatedBackground } from "@/components/animated-background"
@@ -23,6 +24,11 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({})
+  const [resetEmail, setResetEmail] = useState("")
+  const [isResetLoading, setIsResetLoading] = useState(false)
+  const [resetError, setResetError] = useState("")
+  const [resetSuccess, setResetSuccess] = useState(false)
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false)
   const router = useRouter()
 
   const validateField = (field: string, value: string) => {
@@ -81,6 +87,40 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!resetEmail) {
+      setResetError("Email é obrigatório")
+      return
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail)) {
+      setResetError("Email inválido")
+      return
+    }
+
+    setIsResetLoading(true)
+    setResetError("")
+
+    try {
+      await resetPassword(resetEmail)
+      setResetSuccess(true)
+    } catch (error: any) {
+      console.error("Reset password error:", error)
+      setResetError(error.message)
+    } finally {
+      setIsResetLoading(false)
+    }
+  }
+
+  const handleResetDialogClose = () => {
+    setIsResetDialogOpen(false)
+    setResetEmail("")
+    setResetError("")
+    setResetSuccess(false)
   }
 
   return (
@@ -213,6 +253,102 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
+
+            {/* Forgot Password Link */}
+            <div className="text-center">
+              <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="link"
+                    className="text-sm text-gray-600 hover:text-red-600 p-0 font-medium"
+                  >
+                    Esqueci minha senha
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-center">Recuperar Senha</DialogTitle>
+                    <DialogDescription className="text-center">
+                      Digite seu email para receber instruções de recuperação de senha
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  {!resetSuccess ? (
+                    <form onSubmit={handleResetPassword} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="reset-email" className="text-sm font-medium">
+                          Email
+                        </Label>
+                        <Input
+                          id="reset-email"
+                          type="email"
+                          placeholder="seu@email.com"
+                          value={resetEmail}
+                          onChange={(e) => setResetEmail(e.target.value)}
+                          className="h-11"
+                          required
+                        />
+                      </div>
+
+                      {resetError && (
+                        <Alert className="border-red-200 bg-red-50">
+                          <AlertCircle className="h-4 w-4 text-red-600" />
+                          <AlertDescription className="text-red-800">{resetError}</AlertDescription>
+                        </Alert>
+                      )}
+
+                      <div className="flex gap-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="flex-1"
+                          onClick={handleResetDialogClose}
+                        >
+                          Cancelar
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                          disabled={isResetLoading}
+                        >
+                          {isResetLoading ? (
+                            <div className="flex items-center gap-2">
+                              <LoadingSpinner size="sm" className="text-white" />
+                              Enviando...
+                            </div>
+                          ) : (
+                            "Enviar"
+                          )}
+                        </Button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div className="text-center space-y-4">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                          <CheckCircle className="h-8 w-8 text-green-600" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-semibold text-gray-900">Email enviado!</h3>
+                        <p className="text-sm text-gray-600">
+                          Enviamos instruções de recuperação de senha para <strong>{resetEmail}</strong>
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Verifique sua caixa de entrada e spam
+                        </p>
+                      </div>
+                      <Button
+                        onClick={handleResetDialogClose}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white"
+                      >
+                        Fechar
+                      </Button>
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
+            </div>
 
             {/* Register Link */}
             <div className="text-center pt-4 border-t border-gray-100">

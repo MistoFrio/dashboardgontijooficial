@@ -115,3 +115,37 @@ export const createUser = async (userData: {
     throw new Error(error.message || "Erro ao criar usuário")
   }
 }
+
+export const resetPassword = async (email: string) => {
+  try {
+    // Verificar se o usuário existe na nossa tabela
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("email, status")
+      .eq("email", email)
+      .single()
+
+    if (userError || !userData) {
+      throw new Error("Email não encontrado no sistema")
+    }
+
+    // Verificar se o usuário está ativo
+    if (userData.status !== "active") {
+      throw new Error("Usuário inativo")
+    }
+
+    // Enviar email de reset de senha
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+
+    if (resetError) {
+      throw new Error("Erro ao enviar email de reset")
+    }
+
+    return { success: true }
+  } catch (error: any) {
+    console.error("Reset password error:", error)
+    throw new Error(error.message || "Erro ao enviar email de reset")
+  }
+}

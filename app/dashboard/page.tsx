@@ -9,7 +9,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
 import { Breadcrumb } from "@/components/ui/breadcrumb"
-import { LogOut, ExternalLink, Monitor, Globe } from "lucide-react"
+import { LogOut, ExternalLink, Monitor, Globe, MessageCircle } from "lucide-react"
 import { getCurrentUser, signOut } from "@/lib/auth"
 import { supabase } from "@/lib/supabase"
 import type { Dashboard } from "@/lib/supabase"
@@ -160,6 +160,15 @@ export default function UserDashboard() {
                   </div>
                 </div>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.open("https://wa.me/553199308765", "_blank")}
+                className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 group"
+              >
+                <MessageCircle className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                <span className="hidden sm:inline font-medium">Sugestões</span>
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
