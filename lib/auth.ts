@@ -107,32 +107,6 @@ export const createUser = async (userData: {
       console.error("Erro ao criar usuário na tabela:", userError)
     }
 
-    // 3. Atribuir Power BI padrão ao novo usuário
-    if (userRecord) {
-      try {
-        // Buscar o Power BI padrão
-        const { data: defaultDashboard } = await supabase
-          .from("dashboards")
-          .select("id")
-          .eq("name", "Painel de Produção - Gontijo Fundações")
-          .single()
-
-        if (defaultDashboard) {
-          // Atribuir o Power BI ao novo usuário
-          await supabase
-            .from("user_dashboards")
-            .insert({
-              user_id: userRecord.id,
-              dashboard_id: defaultDashboard.id,
-              assigned_by: userRecord.id, // Auto-atribuição
-            })
-        }
-      } catch (error) {
-        console.error("Erro ao atribuir Power BI padrão:", error)
-        // Não falha a criação do usuário se não conseguir atribuir o Power BI
-      }
-    }
-
     return {
       user: userRecord || null,
       authUser: authData.user,
@@ -173,68 +147,5 @@ export const resetPassword = async (email: string) => {
   } catch (error: any) {
     console.error("Reset password error:", error)
     throw new Error(error.message || "Erro ao enviar email de reset")
-  }
-}
-
-export const assignDefaultPowerBI = async () => {
-  try {
-    // 1. Criar o Power BI padrão se não existir
-    const { data: existingDashboard } = await supabase
-      .from("dashboards")
-      .select("id")
-      .eq("name", "Painel de Produção - Gontijo Fundações")
-      .single()
-
-    let dashboardId: string
-
-    if (!existingDashboard) {
-      // Criar o Power BI padrão
-      const { data: newDashboard, error: createError } = await supabase
-        .from("dashboards")
-        .insert({
-          name: "Painel de Produção - Gontijo Fundações",
-          type: "iframe",
-          url: "https://app.powerbi.com/view?r=eyJrIjoiYzQ4Y2Y3MzktYjI0MC00NzY5LWE4YjMtN2QxYzUyZDE3OGQ4IiwidCI6IjQ4YzY4NDJkLTRhOWItNGVhZC05ODU3LWY4OTQ5N2E3NGM1ZCIsImMiOjF9",
-          description: "Dashboard de produção da Gontijo Fundações com métricas e indicadores em tempo real",
-          created_by: (await getCurrentUser())?.id || null,
-        })
-        .select()
-        .single()
-
-      if (createError) throw createError
-      dashboardId = newDashboard.id
-    } else {
-      dashboardId = existingDashboard.id
-    }
-
-    // 2. Atribuir o Power BI a todos os usuários ativos que ainda não o possuem
-    const { data: usersWithoutPowerBI } = await supabase
-      .from("users")
-      .select("id")
-      .eq("status", "active")
-      .not("id", "in", `(
-        SELECT user_id 
-        FROM user_dashboards 
-        WHERE dashboard_id = '${dashboardId}'
-      )`)
-
-    if (usersWithoutPowerBI && usersWithoutPowerBI.length > 0) {
-      const assignments = usersWithoutPowerBI.map((user) => ({
-        user_id: user.id,
-        dashboard_id: dashboardId,
-        assigned_by: (await getCurrentUser())?.id || user.id,
-      }))
-
-      const { error: assignError } = await supabase
-        .from("user_dashboards")
-        .insert(assignments)
-
-      if (assignError) throw assignError
-    }
-
-    return { success: true, assignedCount: usersWithoutPowerBI?.length || 0 }
-  } catch (error: any) {
-    console.error("Assign default Power BI error:", error)
-    throw new Error(error.message || "Erro ao atribuir Power BI padrão")
   }
 }
