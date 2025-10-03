@@ -10,7 +10,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { Users, Monitor, Settings, LogOut, Shield, Activity } from "lucide-react"
 import { UserManagement } from "@/components/user-management"
 import { DashboardManagement } from "@/components/dashboard-management"
-import { getCurrentUser, signOut } from "@/lib/auth"
+import { getCurrentUser, signOut, assignDefaultPowerBI } from "@/lib/auth"
 import { supabase } from "@/lib/supabase"
 import type { User, Dashboard } from "@/lib/supabase"
 import Image from "next/image"
@@ -20,6 +20,7 @@ export default function AdminPage() {
   const [dashboards, setDashboards] = useState<Dashboard[]>([])
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isAssigningPowerBI, setIsAssigningPowerBI] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -79,6 +80,19 @@ export default function AdminPage() {
       router.push("/")
     } catch (error) {
       console.error("Error signing out:", error)
+    }
+  }
+
+  const handleAssignDefaultPowerBI = async () => {
+    setIsAssigningPowerBI(true)
+    try {
+      const result = await assignDefaultPowerBI()
+      alert(`Power BI atribuído com sucesso! ${result.assignedCount} usuários receberam acesso.`)
+      await loadData() // Recarregar dados
+    } catch (error: any) {
+      alert(`Erro ao atribuir Power BI: ${error.message}`)
+    } finally {
+      setIsAssigningPowerBI(false)
     }
   }
 
@@ -195,6 +209,32 @@ export default function AdminPage() {
             icon={Settings}
             className="lg:col-span-1"
           />
+        </div>
+
+        {/* Power BI Configuration */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Power BI Padrão</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Atribua o "Painel de Produção - Gontijo Fundações" para todos os usuários ativos
+              </p>
+            </div>
+            <Button
+              onClick={handleAssignDefaultPowerBI}
+              disabled={isAssigningPowerBI}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isAssigningPowerBI ? (
+                <>
+                  <LoadingSpinner size="sm" className="mr-2" />
+                  Atribuindo...
+                </>
+              ) : (
+                "Atribuir Power BI"
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Management Tabs */}
