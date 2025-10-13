@@ -94,7 +94,7 @@ export default function LoginPage() {
         <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-md">
           <CardHeader className="text-center space-y-6 pt-8">
             <div className="flex justify-center">
-              <div className="w-20 h-20 relative p-2 bg-white rounded-2xl shadow-sm">
+              <div className="w-20 h-20 relative p-2 bg-white rounded-2xl shadow-sm flex items-center justify-center">
                 <Image
                   src="/images/gontijo-logo.png"
                   alt="Gontijo Fundações Logo"
