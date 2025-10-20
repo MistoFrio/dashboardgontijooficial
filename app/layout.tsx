@@ -4,7 +4,11 @@ import { Inter } from "next/font/google"
 import { SupportWidget } from "@/components/ui/support-widget"
 import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: "Gontijo Fundações - Sistema de Dashboards",
@@ -18,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR">
-      <body className={inter.className}>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
         {children}
         <SupportWidget />
       </body>
